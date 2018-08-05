@@ -1,0 +1,216 @@
+% Start with a LaTeX document, as normal:
+\documentclass[12pt, a4paper]{article}
+% The margins here have been made very small. 
+\usepackage{float}
+\setlength{\topmargin}{-2.5cm} \setlength{\topskip}{0cm}
+\setlength{\headheight}{1.5cm} \setlength{\headsep}{0.5cm}
+\setlength{\textheight}{26cm} \setlength{\oddsidemargin}{-0cm}
+\setlength{\evensidemargin}{0cm} \setlength{\textwidth}{16cm}
+
+\renewcommand{\theenumi}{(\roman{enumi})}%
+
+\usepackage{natbib}
+\bibpunct[, ]{(}{)}{;}{a}{,}{,}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\title{MAS 6024, Assignment 2\\
+Registration Number 170224545}
+\date{}
+\maketitle
+
+\section*{Part 1}
+
+\begin{enumerate}
+\item 
+A data set likelihood for Normally distributed random variables with the i.i.d. assumption:
+
+
+
+% Now we run some R code, known as a "chunk"
+% You can run the code in this chunk within RStudio in the normal way,
+% or you can run the whole chunk from the Chunks menu above.
+% Try experimenting by changing some of the arguments:
+%  echo=F
+%  results='asis'
+%  results='markup'
+% and recompiling
+% there is an exercise at the end of the pdf document produced
+
+
+<<>>=
+x <- rt(10, 2)
+fx <- function(c, d){
+  f <-ecdf(x)
+  e <- f(d) - f(c)
+  return (e)
+}
+@
+
+\item
+% Now we're back in LaTeX mode. 
+% You can run R commands and extract output to go into your document 
+% with the \Sexp{ } command.
+% You'll almost certainly want to round any values.
+% You can use the commands signif or round to do this.
+
+Firstly, we sample 10 elements x from distribution t with 2 degrees of freedom.
+The R code is below:
+<<>>=
+x <- rt(10, 2)
+fx <- function(c, d){
+  f <-ecdf(x)
+  e <- f(d) - f(c)
+  return (e)
+}
+@
+When c = -1, d =1
+<<>>=
+fx(-1,1)
+@
+When c = 4, d= 6
+<<>>=
+fx(4,6)
+@
+Then, we sample 10000 elements x from distribution t with 2 degrees of freedom.
+
+<<>>=
+x <- rt(10000, 2)
+fx <- function(c, d){
+  f <-ecdf(x)
+  e <- f(d) - f(c)
+  return (e)
+}
+@
+When c =-1, d =1
+<<>>=
+fx(-1,1)
+## [1] 0.5764
+@
+When c =4, d=6
+<<>>=
+fx(4,6)
+@
+<<>>=
+y1 <- pt(1,2) - pt(-1, 2)
+y1
+
+@
+<<>>=
+y2 <- pt(6,2) - pt(4,2)
+y2
+
+@
+As we can see , when number of realisations simulated increases, The approximations is closer to the exact probability value.
+\item
+The black line is the real value of t distribution, the green line is the edcf figures with 10 realisations and the red line is the edcf figures with 10000 realisations.
+<<>>=
+x <- rt(10,2)
+plot(ecdf(x),xlim=c(-8,8),col="green")
+par(new=TRUE) 
+x <- (rt(10000,2)) 
+plot(ecdf(x),xlim=c(-8,8),col="red")
+par(new=TRUE)
+curve(pt(x,2),xlim=c(-8,8))
+
+@
+
+\end{enumerate}
+
+\section*{Part 2}
+\begin{enumerate}
+\item 
+Assume the probability of defective lea???et is p,
+$$
+p = \frac{a_1 + a_2}{n}
+$$
+$$
+a_1 = n_1 * p_1 
+$$
+$$
+a_2 = n_2 * p_2
+$$
+$$
+n_1 = \frac{N_1}{N_1 + N_2} * n
+$$
+$$
+n_2 = \frac{N_2}{N_1 + N_2} * n
+$$
+$$
+P_1 = C ^{x_1}_{n_1}p^{x_1}_1(1-p_1)^{n_1-x_1}
+$$
+$$
+P_2 = C ^{x_2}_{n_2}p^{x_2}_2(1-p_2)^{n_2-x_2}
+$$
+\item 
+$$
+P = \frac{N_1p_1 + N_2p_2}{N_1 + N_2} = \frac{10000*0.05+20000*0.02}{10000+20000} = 0.03
+$$
+When $p_1$ = 0.05, $p_2$ = 0.02, $N_1$ = 10000 and $N_2$ = 20000, we can say that the proportion is 0.03.
+
+Because,
+$$
+a = NP = 200*0.03 = 6, 
+$$
+
+We use 'a1' refer to defective leaflet prodeced by the first device, 'b1' refer to good leaflet prodeced by the first device, 'a2' refer to defective leaflet prodeced by the second device, 'b1' refer to good leaflet prodeced by the second device,
+we can have the R code:
+<<>>=
+x =c('a1','b1')
+p_1 <- sample(x,size = 10000,TRUE,prob=c(0.05,0.95))
+x =c('a2','b2')
+p_2 <- sample(x,size = 20000,TRUE,prob=c(0.02,0.98))
+x =c(p_1 , p_2)
+p_3 <-sample(x ,200)
+
+e = 0
+for(i in 1:200){
+  if (p_3[i] == 'a1'){
+    e = e+1}}
+
+f = 0
+for(i in 1:200){
+  if (p_3[i] == 'b1'){
+    f = f+1}}
+
+g = 0
+for(i in 1:200){
+  if (p_3[i] == 'a2'){
+    g = g+1}}
+
+
+h = 0
+for(i in 1:200){
+  if (p_3[i] == 'b2'){
+    h = h+1}}
+e
+f
+g
+h
+
+e+g
+@
+The value of 'e+g' is the figure of defective leaflets in 200 sample.
+
+If we run more times , the figure of defective leaflets will be closer to 6.
+
+It means that When the sample size is 200, the will be 6 defective leaflets.
+
+
+
+
+\end{enumerate}
+
+
+
+
+
+% Include these two lines at the end of your document
+% to create the bibliography
+\bibliographystyle{rmd}
+\bibliography{refdatabase}
+
+
+
+
+\end{document}
